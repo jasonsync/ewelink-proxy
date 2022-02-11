@@ -1,2 +1,2 @@
 # ewelink-proxy
-ewelink nodejs helper
+HTTP API proxy & websocket proxy for ewelink
