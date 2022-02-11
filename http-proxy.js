@@ -57,7 +57,10 @@ const server = http.createServer(async (req, res) => {
       // request parameters to config...
       let reqJSON = {};
       let json = await getJSONBodyAsync(req);
-      console.log('\x1b[35m%s\x1b[0m', json);
+      // console.log('\x1b[35m%s\x1b[0m', json);
+      console.dir(json, {
+        colors: true
+      });
       res.write(JSON.stringify(json));
       res.end();
       // end test
@@ -117,7 +120,6 @@ const doEwelinkRequest = async function(options = {
   // alias to device_id mapping:
   // TODO: lookup in MariaDB
   let requestDatetime = Date.now();
-  let duration = null;
   let returnvalue = null;
 
   switch (options.action) {
@@ -127,18 +129,20 @@ const doEwelinkRequest = async function(options = {
       console.log("==> Calling: toggleDevice('" + options.device_id + "'); " + new Date(requestDatetime));
 
 
+      console.time("toggleDevice_" + options.device_id);
       await connection.toggleDevice(options.device_id)
         .then(async ret => {
           duration = Date.now() - requestDatetime;
           console.log('\x1b[33m%s\x1b[0m', text + ' - Toggle');
-          console.log("Response time: " + duration + "ms");
+          console.timeEnd("toggleDevice_" + options.device_id);
           console.log(ret);
           if (!ret.error) {
             // Confirm the state
+            console.time("getDevicePowerState_" + options.device_id);
             const status = await connection.getDevicePowerState(options.device_id);
-            duration = Date.now() - requestDatetime;
+
             console.log('\x1b[33m%s\x1b[0m', text + " - Current Status");
-            console.log("Response time: " + duration + "ms");
+            console.timeEnd("getDevicePowerState_" + options.device_id);
             console.log(status);
             console.log("----------------------------------------------");
             console.log();
@@ -169,6 +173,5 @@ async function getJSONBodyAsync(req) {
     buffers.push(chunk);
   }
   const data = Buffer.concat(buffers).toString();
-  console.log('here');
   return JSON.parse(data);
 }
