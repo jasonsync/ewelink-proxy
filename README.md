@@ -1,2 +1,2 @@
-# sync-access-ewelink-control
+# ewelink-proxy
 ewelink nodejs helper
